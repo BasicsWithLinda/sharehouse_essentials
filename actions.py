@@ -95,6 +95,19 @@ def initialise_database():
     conn.commit()
     conn.close()
 
+def view_database():
+    """
+    View the database in list format. Just in case you need to double check if all the data in the database is correct.
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    print(cursor.fetchall())
+
+    conn.close()
+
 # Initialize the database
 if __name__ == "__main__":
     initialise_database()
+    view_database()
