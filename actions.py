@@ -1,3 +1,4 @@
+# --- IMPORTS ---
 import sqlite3
 from datetime import datetime
 
@@ -98,16 +99,28 @@ def initialise_database():
 def view_database():
     """
     View the database in list format. Just in case you need to double check if all the data in the database is correct.
+    Mostly used for debugging purposes.
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
+    # get all table names
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    print(cursor.fetchall())
+    tables = cursor.fetchall()
+
+    for table in tables:
+        table_name = table[0]
+        print(f"\nContents of table: {table_name}")
+
+        # through current table, go through each item
+        cursor.execute(f"SELECT * FROM {table_name};")
+        rows = cursor.fetchall()
+
+        if rows:
+            # print row if exists
+            for row in rows:
+                print(row)
+        else:
+            print("No data found.")
 
     conn.close()
-
-# Initialize the database
-if __name__ == "__main__":
-    initialise_database()
-    view_database()
