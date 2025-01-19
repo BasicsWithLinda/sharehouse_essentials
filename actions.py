@@ -2,7 +2,7 @@
 import sqlite3
 from datetime import datetime
 from constants import table_names
-from util import get_people, add_debt, get_items, add_item, show_person_options, show_item_options, add_household_need, show_unresolved_debts, delete_debt
+from util import get_people, add_debt, get_items, add_item, show_person_options, show_item_options, add_household_need, show_unresolved_debts, delete_debt, show_needs_to_be_purchased, set_need_as_purchased
 
 
 # --- Database Operations ---
@@ -141,6 +141,17 @@ def confirm_debt_payment():
     delete_debt(int(debt_id))
 
     print("Debt payment confirmed.")
+
+def confirm_houseneed_payment():
+    """Handles confirmation of sharehouse needs payment."""
+    print("\nConfirm Sharehouse Needs Payment")
+    show_needs_to_be_purchased()
+    needs_id = input("What is the number of the associated need that has been purchased? ")
+
+    set_need_as_purchased(needs_id)
+
+    print("Sharehouse need payment confirmed.")
+
 
 def add_new_item(item_try: int):
     """Adds new item to the item list if it does not exist and returns the new item's id. Otherwise, returns current item id choice"""

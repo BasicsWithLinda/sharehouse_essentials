@@ -48,12 +48,24 @@ def reset_database():
     conn.close()
 
 def show_person_options():
+    """
+    Shows all the possible people you can select from with their associated id!
+
+    Returns:
+        Nones
+    """
     people = get_people()
     print("Select a person from the following list by enterring the number next to it:")
     for person in people:
         print(f"{person['person_id']}: {person['full_name']}")
 
 def show_item_options():
+    """
+    Shows all possible items you can select from!
+
+    Returns:
+        Nones
+    """
     items = get_items()
     print("Select an item from the following list by enterring the number next to it:")
     for it in items:
@@ -62,6 +74,9 @@ def show_item_options():
 def show_unresolved_debts():
     """
     Shows unresolved debts!
+
+    Returns:
+        Nones
     """
     unresolved_debts = get_unresolved_debts_with_details()
     
@@ -73,6 +88,20 @@ def show_unresolved_debts():
         debt_id, owed_by_name, owed_to_name, item_name, amount = debt
         print(f"{debt_id}: {owed_by_name} owes {owed_to_name} for {item_name} which costs ${amount}.")
 
+def show_needs_to_be_purchased():
+    """
+    Shows what needs to be purchased!
+
+    Returns:
+        None
+    """
+    needs = get_needs_to_be_purchased()
+
+    if needs:
+        for need_id, item_name, budget in needs:
+            print(f"{need_id}: {item_name} with the budget ${budget}")
+    else:
+        print("All household needs have been purchased!")
 
 ############################ ADDING OR REMOVING FROM DATABASE #######################################
 
@@ -290,11 +319,11 @@ def get_unresolved_debts_with_details() -> List[Tuple[int, str, str, str, float]
 
     Returns:
         List[Tuple[int, str, str, str, float]]: A list of tuples where each tuple represents:
-            - origin_id (int): The ID of the debt origin.
-            - owed_by_name (str): The full name of the debtor.
-            - owed_to_name (str): The full name of the creditor.
-            - item_name (str): The name of the item associated with the debt.
-            - amount (float): The amount owed.
+            - origin_id (int): the id of the debt origin
+            - owed_by_name (str): full name of debtor
+            - owed_to_name (str): full name of person who is owed money
+            - item_name (str): name of the item associated with the debt
+            - amount (float): the amount owed
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -318,3 +347,56 @@ def get_unresolved_debts_with_details() -> List[Tuple[int, str, str, str, float]
 
     conn.close()
     return unresolved_debts
+
+def get_needs_to_be_purchased() -> list[tuple[int, str, float]]:
+    """
+    Gets the household needs that need to be purchased.
+    
+    Args: None
+
+    Returns:
+        list[tuple[int, str, float]]: A list of tuples containing:
+            - need_id (int): id associated with the household needed item
+            - item_name (str): the item needed
+            - budget (float): the approximate budget of the item
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            HouseholdNeeds.need_id, 
+            Items.item_name, 
+            HouseholdNeeds.budget
+        FROM HouseholdNeeds
+        JOIN Items ON HouseholdNeeds.item_id = Items.item_id
+        WHERE HouseholdNeeds.is_purchased = 0;
+    """)
+
+    needs = cursor.fetchall()
+    conn.close()
+    return needs
+
+############################### SETTERS FOR DATABASE ##########################
+
+def set_need_as_purchased(need_id: int):
+    """
+    Sets a household need as purchased by updating its is_purchased state to 1.
+
+    Args:
+        need_id (int): id associated with the household needed item
+
+    Returns:
+        None
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE HouseholdNeeds
+        SET is_purchased = 1
+        WHERE need_id = ?;
+    """, (need_id,))
+
+    conn.commit()
+    conn.close()
