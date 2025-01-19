@@ -1,6 +1,7 @@
 import sqlite3
 from constants import table_names
 
+############################ VIEWING/RESETTING DATABASE #######################################
 def view_database():
     """
     View the database in list format. Just in case you need to double check if all the data in the database is correct.
@@ -45,8 +46,22 @@ def reset_database():
     conn.commit()
     conn.close()
 
+def show_person_options():
+    people = get_people()
+    print("Select a person from the following list by enterring the number next to it:")
+    for person in people:
+        print(f"{person['person_id']}: {person['full_name']}")
+
+def show_item_options():
+    items = get_items()
+    print("Select an item from the following list by enterring the number next to it:")
+    for it in items:
+        print(f"{it['item_id']}: {it['item_name']} with cost ${it['default_cost']}")
+
+############################ ADDING OR REMOVING FROM DATABASE #######################################
+
 def add_person(first_name, last_name, allergies=None, misc_info=None):
-    """Adds a new person to the database."""
+    """Adds a new person to the database"""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -57,7 +72,7 @@ def add_person(first_name, last_name, allergies=None, misc_info=None):
     conn.close()
 
 def delete_person(person_id):
-    """Deletes a person from the database by person_id."""
+    """Deletes a person from the database by person_id"""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -66,7 +81,7 @@ def delete_person(person_id):
     conn.close()
 
 def add_item(item_name, default_cost):
-    """Adds a new item to the Items table."""
+    """Adds a new item to the Items table"""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -79,7 +94,7 @@ def add_item(item_name, default_cost):
     conn.close()
 
 def delete_item(item_id):
-    """Deletes an item from the Items table by item_id."""
+    """Deletes an item from the Items table by item_id"""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -88,7 +103,7 @@ def delete_item(item_id):
     conn.close()
 
 def add_debt(person_id, item_id, owed_by, owed_to, amount, purchase_date):
-    """Adds a new debt to the DebtMapping table."""
+    """Adds a new debt to the DebtMapping table"""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -116,9 +131,11 @@ def delete_debt(debt_id):
     conn.commit()
     conn.close()
 
+############################ GETTING FROM DATABASE #######################################
+
 def get_people():
     """
-    Fetches all people from the database and returns a list of dictionaries with their IDs and full names.
+    Gets all people from the database and returns a list of dictionaries with their IDs and full names
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -133,9 +150,9 @@ def get_people():
     return people
 
 def get_owed_amounts():
-    """
-    Fetches the total owed amount for each person from the database.
-    Returns a list of dictionaries with person ID, name, and amount owed.
+    """"
+    Gets the total owed amount for each person from the database
+    Returns a list of dictionaries with person ID, name, and amount owed
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -157,8 +174,8 @@ def get_owed_amounts():
 
 def get_debt_details():
     """
-    Fetches detailed debt records, including what was owed, who owes it, and to whom.
-    Returns a list of dictionaries with debt details.
+    Gets detailed debt records, including what was owed, who owes it, and to whom
+    Returns a list of dictionaries with debt details
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -184,3 +201,41 @@ def get_debt_details():
 
     conn.close()
     return debt_details
+
+def get_items():
+    """
+    Gets all items from the database and returns a list of dictionaries with their details
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT item_id, item_name, default_cost FROM Items;")
+    items = [
+        {"item_id": row[0], "item_name": row[1], "default_cost": row[2] or 0.0}
+        for row in cursor.fetchall()
+    ]
+
+    conn.close()
+    return items
+
+def get_item_cost(item_id):
+    """
+    Gets the cost of an item from the database based on its item_id
+    
+    Args:
+        item_id (int): The ID of the item to fetch the cost for
+
+    Returns:
+        float: The cost of the item if it exists, or None
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT default_cost FROM Items WHERE item_id = ?;", (item_id,))
+    result = cursor.fetchone()
+    
+    conn.close()
+
+    if result:
+        return result[0] or 0.0  # defaults to 0 if does not exist
+    return None  # Item not found

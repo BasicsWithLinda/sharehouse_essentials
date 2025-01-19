@@ -2,6 +2,8 @@
 import sqlite3
 from datetime import datetime
 from constants import table_names
+from util import get_people, add_debt, get_items, add_item, show_person_options, show_item_options
+
 
 # --- Database Operations ---
 def initialise_database():
@@ -96,3 +98,29 @@ def initialise_database():
 
     conn.commit()
     conn.close()
+
+def input_debt():
+    """Handles the process of inputting debt information."""
+
+    show_person_options()
+    person_id = int(input("Enter the person ID who owes money: "))
+    amount = float(input("How much do they owe? "))
+    show_item_options()
+    item_try = input("If none, type a random number not in the list. ")
+    item_id = add_new_item(int(item_try))
+    show_person_options()
+    owed_to_id = int(input("Who do they owe it to (enter person ID)? "))
+    date = input("What is the date (YYYY-MM-DD)? ")
+
+    add_debt(person_id, item_id, person_id, owed_to_id, date)
+
+def add_new_item(item_try: int):
+    """Adds new item to the item list if it does not exist and returns the new item's id. Otherwise, returns current item id choice"""
+    items = get_items()
+    item = item_try
+    if item > int(items.keys()[-1]):
+        item_name = input("What is the name of the item?")
+        item_cost = input("What is the cost of the item?")
+        add_item(item_name, item_cost)
+        item = items.keys()[-1] + 1 # due to auto incrementing, the latest item added will just be the last item's id + 1
+    return item
