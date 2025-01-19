@@ -112,13 +112,14 @@ def input_debt():
     owed_to_id = int(input("Who do they owe it to (enter person ID)? "))
     date = input("What is the date (YYYY-MM-DD)? ")
 
-    add_debt(person_id, item_id, person_id, owed_to_id, date)
+    add_debt(item_id, person_id, owed_to_id, amount, date)
 
 def add_new_item(item_try: int):
     """Adds new item to the item list if it does not exist and returns the new item's id. Otherwise, returns current item id choice"""
     items = get_items()
     item = item_try
-    if item > int(items.keys()[-1]):
+    print(items[-1])
+    if item > int(items[-1]['item_id']):
         item_name = input("What is the name of the item?")
         item_cost = input("What is the cost of the item?")
         add_item(item_name, item_cost)

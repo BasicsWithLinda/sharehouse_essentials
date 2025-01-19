@@ -56,7 +56,7 @@ def show_item_options():
     items = get_items()
     print("Select an item from the following list by enterring the number next to it:")
     for it in items:
-        print(f"{it['item_id']}: {it['item_name']} with cost ${it['default_cost']}")
+        print(f"{it['item_id']}: {it['item_name']}")
 
 ############################ ADDING OR REMOVING FROM DATABASE #######################################
 
@@ -102,7 +102,7 @@ def delete_item(item_id):
     conn.commit()
     conn.close()
 
-def add_debt(person_id, item_id, owed_by, owed_to, amount, purchase_date):
+def add_debt(item_id, owed_by, owed_to, amount, purchase_date):
     """Adds a new debt to the DebtMapping table"""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
