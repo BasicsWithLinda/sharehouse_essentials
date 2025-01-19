@@ -115,3 +115,72 @@ def delete_debt(debt_id):
     cursor.execute("DELETE FROM DebtMapping WHERE origin_id = ?", (debt_id,))
     conn.commit()
     conn.close()
+
+def get_people():
+    """
+    Fetches all people from the database and returns a list of dictionaries with their IDs and full names.
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT person_id, first_name, last_name FROM People;")
+    people = [
+        {"person_id": row[0], "full_name": f"{row[1]} {row[2]}"}
+        for row in cursor.fetchall()
+    ]
+
+    conn.close()
+    return people
+
+def get_owed_amounts():
+    """
+    Fetches the total owed amount for each person from the database.
+    Returns a list of dictionaries with person ID, name, and amount owed.
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT People.person_id, first_name, last_name, SUM(amount)
+    FROM DebtMapping
+    JOIN People ON DebtMapping.owed_by = People.person_id
+    GROUP BY People.person_id;
+    """)
+
+    owed_amounts = [
+        {"person_id": row[0], "full_name": f"{row[1]} {row[2]}", "amount_owed": row[3] or 0}
+        for row in cursor.fetchall()
+    ]
+
+    conn.close()
+    return owed_amounts
+
+def get_debt_details():
+    """
+    Fetches detailed debt records, including what was owed, who owes it, and to whom.
+    Returns a list of dictionaries with debt details.
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT 
+        DM.origin_id,
+        P1.first_name || ' ' || P1.last_name AS owed_by,
+        P2.first_name || ' ' || P2.last_name AS owed_to,
+        Items.item_name,
+        DM.amount
+    FROM DebtMapping DM
+    JOIN People P1 ON DM.owed_by = P1.person_id
+    JOIN People P2 ON DM.owed_to = P2.person_id
+    JOIN OriginOfOwedMoney OOM ON DM.origin_id = OOM.origin_id
+    JOIN Items ON OOM.item_id = Items.item_id;
+    """)
+
+    debt_details = [
+        {"origin_id": row[0], "owed_by": row[1], "owed_to": row[2], "item_name": row[3], "amount": row[4]}
+        for row in cursor.fetchall()
+    ]
+
+    conn.close()
+    return debt_details
