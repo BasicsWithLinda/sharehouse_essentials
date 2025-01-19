@@ -1,6 +1,7 @@
 # --- IMPORTS ---
 import sqlite3
 from datetime import datetime
+from constants import table_names
 
 # --- Database Operations ---
 def initialise_database():
@@ -123,4 +124,19 @@ def view_database():
         else:
             print("No data found.")
 
+    conn.close()
+
+def reset_database():
+    """
+    Resets the database by deleting all data in every table. 
+    This does not affect the table schema, only the data inside them.
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    for table in table_names:
+        cursor.execute(f"DELETE FROM {table};")
+        print(f"All entries deleted from {table}.")
+
+    conn.commit()
     conn.close()
