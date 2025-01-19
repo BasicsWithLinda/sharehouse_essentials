@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Optional, Union
 from constants import table_names
 
 ############################ VIEWING/RESETTING DATABASE #######################################
@@ -130,6 +131,34 @@ def delete_debt(debt_id):
     cursor.execute("DELETE FROM DebtMapping WHERE origin_id = ?", (debt_id,))
     conn.commit()
     conn.close()
+
+def add_household_need(item_id: int, budget: float, purchased_by: Optional[int] = None, purchase_date: Optional[str] = None, is_purchased: int = 0) -> None:
+    """
+    Adds a new entry to the HouseholdNeeds table.
+
+    Args:
+        item_id (int): The ID of the item.
+        budget (float): The budget for the item.
+        purchased_by (int, optional): The person ID of the purchaser. Default is None.
+        purchase_date (str, optional): The date of purchase in YYYY-MM-DD format. Default is None.
+        is_purchased (int, optional): Whether the item has been purchased (0 for No, 1 for Yes). Default is 0.
+
+    Returns:
+        None
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    # Insert the new household need
+    cursor.execute("""
+        INSERT INTO HouseholdNeeds (item_id, budget, purchased_by, purchase_date, is_purchased)
+        VALUES (?, ?, ?, ?, ?);
+    """, (item_id, budget, purchased_by, purchase_date, is_purchased))
+
+    conn.commit()
+    conn.close()
+    print("Household need added successfully.")
+
 
 ############################ GETTING FROM DATABASE #######################################
 

@@ -2,7 +2,7 @@
 import sqlite3
 from datetime import datetime
 from constants import table_names
-from util import get_people, add_debt, get_items, add_item, show_person_options, show_item_options
+from util import get_people, add_debt, get_items, add_item, show_person_options, show_item_options, add_household_need
 
 
 # --- Database Operations ---
@@ -49,7 +49,7 @@ def initialise_database():
     );
     """)
 
-    # table of items that are purchased
+    # table of items that are purchased_state
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Items (
         item_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -100,7 +100,7 @@ def initialise_database():
     conn.close()
 
 def input_debt():
-    """Handles the process of inputting debt information."""
+    """Prompts user to input debt details. Adds new item to the items database if the debt is over an item not been entered before."""
 
     show_person_options()
     person_id = int(input("Enter the person ID who owes money: "))
@@ -114,14 +114,29 @@ def input_debt():
 
     add_debt(item_id, person_id, owed_to_id, amount, date)
 
+def input_sharehouse_needs():
+    """Prompts user to input what the sharehouse requires with the item and the cost, and stores that into the database for later referral."""
+    
+    print("\nInput Sharehouse Needs")
+    show_item_options()
+    item_try = input("What is the item? Enter the associated number. ")
+    item_id = add_new_item(int(item_try))
+    budget = float(input("What is the approximate cost/budget for the household item? "))
+    assigned_try = input("Are you assigning it to anyone? Enter 'N' if not. ")
+    assigned_person_id = assigned_try if assigned_try.upper() != "N" else 0
+    purchase_date = input("What is the desired purchase date (YYYY-MM-DD)? ")
+    purchased_state = int(input("Has it been purchased yet? Enter 0 for no, and 1 for yes. "))
+
+    add_household_need(int(item_id), float(budget), int(assigned_person_id), purchase_date, int(purchased_state))    
+
 def add_new_item(item_try: int):
     """Adds new item to the item list if it does not exist and returns the new item's id. Otherwise, returns current item id choice"""
     items = get_items()
     item = item_try
-    print(items[-1])
+    print(items[-1]['item_id'])
     if item > int(items[-1]['item_id']):
-        item_name = input("What is the name of the item?")
-        item_cost = input("What is the cost of the item?")
+        item_name = input("What is the name of the item? ")
+        item_cost = input("What is the cost of the item? ")
         add_item(item_name, item_cost)
-        item = items.keys()[-1] + 1 # due to auto incrementing, the latest item added will just be the last item's id + 1
+        item = items[-1]['item_id'] + 1 # due to auto incrementing, the latest item added will just be the last item's id + 1
     return item
