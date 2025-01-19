@@ -2,7 +2,7 @@
 import sqlite3
 from datetime import datetime
 from constants import table_names
-from util import get_people, add_debt, get_items, add_item, show_person_options, show_item_options, add_household_need
+from util import get_people, add_debt, get_items, add_item, show_person_options, show_item_options, add_household_need, show_unresolved_debts, delete_debt
 
 
 # --- Database Operations ---
@@ -113,6 +113,7 @@ def input_debt():
     date = input("What is the date (YYYY-MM-DD)? ")
 
     add_debt(item_id, person_id, owed_to_id, amount, date)
+    print("Debt has been successfully logged.")
 
 def input_sharehouse_needs():
     """Prompts user to input what the sharehouse requires with the item and the cost, and stores that into the database for later referral."""
@@ -127,7 +128,19 @@ def input_sharehouse_needs():
     purchase_date = input("What is the desired purchase date (YYYY-MM-DD)? ")
     purchased_state = int(input("Has it been purchased yet? Enter 0 for no, and 1 for yes. "))
 
-    add_household_need(int(item_id), float(budget), int(assigned_person_id), purchase_date, int(purchased_state))    
+    add_household_need(int(item_id), float(budget), int(assigned_person_id), purchase_date, int(purchased_state)) 
+
+    print("Sharehouse need has been successfully added.")
+
+def confirm_debt_payment():
+    """Handles debt payment confirmation."""
+    print("\nConfirm Debt Payment")
+    show_unresolved_debts()
+    debt_id = input("Input the associated number to the debt. ")
+
+    delete_debt(int(debt_id))
+
+    print("Debt payment confirmed.")
 
 def add_new_item(item_try: int):
     """Adds new item to the item list if it does not exist and returns the new item's id. Otherwise, returns current item id choice"""

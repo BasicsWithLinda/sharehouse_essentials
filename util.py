@@ -1,5 +1,5 @@
 import sqlite3
-from typing import Optional, Union
+from typing import List, Optional, Tuple, Union
 from constants import table_names
 
 ############################ VIEWING/RESETTING DATABASE #######################################
@@ -58,6 +58,21 @@ def show_item_options():
     print("Select an item from the following list by enterring the number next to it:")
     for it in items:
         print(f"{it['item_id']}: {it['item_name']}")
+
+def show_unresolved_debts():
+    """
+    Shows unresolved debts!
+    """
+    unresolved_debts = get_unresolved_debts_with_details()
+    
+    if not unresolved_debts:
+        print("No unresolved debts found.")
+        return
+
+    for debt in unresolved_debts:
+        debt_id, owed_by_name, owed_to_name, item_name, amount = debt
+        print(f"{debt_id}: {owed_by_name} owes {owed_to_name} for {item_name} which costs ${amount}.")
+
 
 ############################ ADDING OR REMOVING FROM DATABASE #######################################
 
@@ -268,3 +283,38 @@ def get_item_cost(item_id):
     if result:
         return result[0] or 0.0  # defaults to 0 if does not exist
     return None  # Item not found
+
+def get_unresolved_debts_with_details() -> List[Tuple[int, str, str, str, float]]:
+    """
+    Retrieves all unresolved debts with full details from the database.
+
+    Returns:
+        List[Tuple[int, str, str, str, float]]: A list of tuples where each tuple represents:
+            - origin_id (int): The ID of the debt origin.
+            - owed_by_name (str): The full name of the debtor.
+            - owed_to_name (str): The full name of the creditor.
+            - item_name (str): The name of the item associated with the debt.
+            - amount (float): The amount owed.
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    # finds the full name of people, the item the debt is over, the actual debt, and the id of the debt.
+    cursor.execute("""
+        SELECT 
+            dm.origin_id,
+            owed_by.first_name || ' ' || owed_by.last_name AS owed_by_name,
+            owed_to.first_name || ' ' || owed_to.last_name AS owed_to_name,
+            it.item_name,
+            dm.amount
+        FROM DebtMapping dm
+        JOIN People owed_by ON dm.owed_by = owed_by.person_id
+        JOIN People owed_to ON dm.owed_to = owed_to.person_id
+        JOIN OriginOfOwedMoney oom ON dm.origin_id = oom.origin_id
+        JOIN Items it ON oom.item_id = it.item_id
+        WHERE dm.amount > 0;  -- Assuming unresolved debts have an amount greater than 0
+    """)
+    unresolved_debts = cursor.fetchall()
+
+    conn.close()
+    return unresolved_debts
