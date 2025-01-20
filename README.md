@@ -19,7 +19,7 @@ Ensure you have the following installed:
 
     ```bash
     git clone https://github.com/BasicsWithLinda/sharehouse_essentials
-    cd sharehouse-manager
+    cd sharehouse-essentials
     ```
 
 2. Install Python dependencies:
