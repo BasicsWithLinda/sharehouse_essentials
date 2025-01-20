@@ -4,7 +4,7 @@ from datetime import datetime
 from constants import table_names
 
 # --- Database Operations ---
-def initialise_database():
+def initialise_database() -> None:
     """
     Initialising the SQLite database to store all sharehouse needs.
     

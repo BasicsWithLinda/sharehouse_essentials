@@ -1,7 +1,8 @@
 import sqlite3
+from typing import Dict, List, Optional, Union
 from constants import table_names
 
-def view_database():
+def view_database() -> None:
     """
     View the database in list format. Just in case you need to double check if all the data in the database is correct.
     Mostly used for debugging purposes.
@@ -30,7 +31,7 @@ def view_database():
 
     conn.close()
 
-def reset_database():
+def reset_database() -> None:
     """
     Resets the database by deleting all data in every table. 
     This does not affect the table schema, only the data inside them.
@@ -45,7 +46,7 @@ def reset_database():
     conn.commit()
     conn.close()
 
-def add_person(first_name, last_name, allergies=None, misc_info=None):
+def add_person(first_name: str, last_name: str, allergies: Optional[str] = None, misc_info: Optional[str] = None) -> None:
     """Adds a new person to the database."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -56,7 +57,7 @@ def add_person(first_name, last_name, allergies=None, misc_info=None):
     conn.commit()
     conn.close()
 
-def delete_person(person_id):
+def delete_person(person_id: int) -> None:
     """Deletes a person from the database by person_id."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -65,7 +66,7 @@ def delete_person(person_id):
     conn.commit()
     conn.close()
 
-def add_item(item_name, default_cost):
+def add_item(item_name: str, default_cost: float) -> None:
     """Adds a new item to the Items table."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -78,7 +79,7 @@ def add_item(item_name, default_cost):
     conn.commit()
     conn.close()
 
-def delete_item(item_id):
+def delete_item(item_id: int) -> None:
     """Deletes an item from the Items table by item_id."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -87,7 +88,7 @@ def delete_item(item_id):
     conn.commit()
     conn.close()
 
-def add_debt(person_id, item_id, owed_by, owed_to, amount, purchase_date):
+def add_debt(person_id: int, item_id: int, owed_by: int, owed_to: int, amount: float, purchase_date: str) -> None:
     """Adds a new debt to the DebtMapping table."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -107,7 +108,7 @@ def add_debt(person_id, item_id, owed_by, owed_to, amount, purchase_date):
     conn.commit()
     conn.close()
 
-def delete_debt(debt_id):
+def delete_debt(debt_id: int) -> None:
     """Deletes a debt from the DebtMapping table by debt_id."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -116,7 +117,7 @@ def delete_debt(debt_id):
     conn.commit()
     conn.close()
 
-def get_people():
+def get_people() -> List[Dict[str, Union[int, str]]]:
     """
     Fetches all people from the database and returns a list of dictionaries with their IDs and full names.
     """
@@ -132,7 +133,7 @@ def get_people():
     conn.close()
     return people
 
-def get_owed_amounts():
+def get_owed_amounts() -> List[Dict[str, Union[int, str, float]]]:
     """
     Fetches the total owed amount for each person from the database.
     Returns a list of dictionaries with person ID, name, and amount owed.
@@ -155,7 +156,7 @@ def get_owed_amounts():
     conn.close()
     return owed_amounts
 
-def get_debt_details():
+def get_debt_details() -> List[Dict[str, Union[int, str, float]]]:
     """
     Fetches detailed debt records, including what was owed, who owes it, and to whom.
     Returns a list of dictionaries with debt details.
