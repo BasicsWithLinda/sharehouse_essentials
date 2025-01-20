@@ -10,7 +10,7 @@ if __name__ == "__main__":
         print("2. Input sharehouse needs")
         print("3. Confirm debt payment")
         print("4. Confirm sharehouse needs payment")
-        print("5. Visualize")
+        print("5. Visualise")
         print("e. Exit")
 
         choice = input("Enter your choice: ").strip()
