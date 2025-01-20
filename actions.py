@@ -7,7 +7,7 @@ from util import get_people, add_debt, get_items, add_item, show_person_options,
 
 
 # --- Database Operations ---
-def initialise_database():
+def initialise_database() -> None:
     """
     Initialising the SQLite database to store all sharehouse needs.
     

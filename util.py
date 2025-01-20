@@ -1,9 +1,10 @@
 import sqlite3
+
 from typing import Dict, List, Optional, Tuple, Union
 from constants import table_names
 
 ############################ VIEWING/RESETTING DATABASE #######################################
-def view_database():
+def view_database() -> None:
     """
     View the database in list format. Just in case you need to double check if all the data in the database is correct.
     Mostly used for debugging purposes.
@@ -32,7 +33,7 @@ def view_database():
 
     conn.close()
 
-def reset_database():
+def reset_database() -> None:
     """
     Resets the database by deleting all data in every table. 
     This does not affect the table schema, only the data inside them.
@@ -71,7 +72,7 @@ def show_item_options():
     for it in items:
         print(f"{it['item_id']}: {it['item_name']}")
 
-def show_unresolved_debts():
+def show_unresolved_debts() -> None:
     """
     Shows unresolved debts!
 
@@ -88,7 +89,7 @@ def show_unresolved_debts():
         debt_id, owed_by_name, owed_to_name, item_name, amount = debt
         print(f"{debt_id}: {owed_by_name} owes {owed_to_name} for {item_name} which costs ${amount}.")
 
-def show_needs_to_be_purchased():
+def show_needs_to_be_purchased() -> None:
     """
     Shows what needs to be purchased!
 
@@ -105,7 +106,7 @@ def show_needs_to_be_purchased():
 
 ############################ ADDING OR REMOVING FROM DATABASE #######################################
 
-def add_person(first_name, last_name, allergies=None, misc_info=None):
+def add_person(first_name: str, last_name: str, allergies: Optional[str] = None, misc_info: Optional[str] = None) -> None:
     """Adds a new person to the database"""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -116,8 +117,8 @@ def add_person(first_name, last_name, allergies=None, misc_info=None):
     conn.commit()
     conn.close()
 
-def delete_person(person_id):
-    """Deletes a person from the database by person_id"""
+def delete_person(person_id: int) -> None:
+    """Deletes a person from the database by person_id."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -125,8 +126,8 @@ def delete_person(person_id):
     conn.commit()
     conn.close()
 
-def add_item(item_name, default_cost):
-    """Adds a new item to the Items table"""
+def add_item(item_name: str, default_cost: float) -> None:
+    """Adds a new item to the Items table."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -138,8 +139,8 @@ def add_item(item_name, default_cost):
     conn.commit()
     conn.close()
 
-def delete_item(item_id):
-    """Deletes an item from the Items table by item_id"""
+def delete_item(item_id: int) -> None:
+    """Deletes an item from the Items table by item_id."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -147,8 +148,8 @@ def delete_item(item_id):
     conn.commit()
     conn.close()
 
-def add_debt(item_id, owed_by, owed_to, amount, purchase_date):
-    """Adds a new debt to the DebtMapping table"""
+def add_debt(person_id: int, item_id: int, owed_by: int, owed_to: int, amount: float, purchase_date: str) -> None:
+    """Adds a new debt to the DebtMapping table."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -167,7 +168,7 @@ def add_debt(item_id, owed_by, owed_to, amount, purchase_date):
     conn.commit()
     conn.close()
 
-def delete_debt(debt_id):
+def delete_debt(debt_id: int) -> None:
     """Deletes a debt from the DebtMapping table by debt_id."""
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -205,8 +206,7 @@ def add_household_need(item_id: int, budget: float, purchased_by: Optional[int] 
 
 
 ############################ GETTING FROM DATABASE #######################################
-
-def get_people():
+def get_people() -> List[Dict[str, Union[int, str]]]:
     """
     Gets all people from the database and returns a list of dictionaries with their IDs and full names
     """
@@ -222,8 +222,8 @@ def get_people():
     conn.close()
     return people
 
-def get_owed_amounts():
-    """"
+def get_owed_amounts() -> List[Dict[str, Union[int, str, float]]]:
+    """
     Gets the total owed amount for each person from the database
     Returns a list of dictionaries with person ID, name, and amount owed
     """
