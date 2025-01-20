@@ -8,6 +8,11 @@ def view_database() -> None:
     """
     View the database in list format. Just in case you need to double check if all the data in the database is correct.
     Mostly used for debugging purposes.
+    
+    Returns: None
+
+    Time complexity: O(t+r) where t is the total number of tables and r is the total number of rows.
+        This is due to iterating through every row in order to print out the contents
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -37,6 +42,11 @@ def reset_database() -> None:
     """
     Resets the database by deleting all data in every table. 
     This does not affect the table schema, only the data inside them.
+    
+    Returns: None
+
+    Time complexity: O(t) where t is the number of tables
+        Iterates through all tables and deletes all its contents.
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -53,7 +63,10 @@ def show_person_options():
     Shows all the possible people you can select from with their associated id!
 
     Returns:
-        Nones
+        None
+
+    Time complexity: O(n) where n is the total number of people in the sharehouse
+        Iterates through every person and prints out their names.
     """
     people = get_people()
     print("Select a person from the following list by enterring the number next to it:")
@@ -65,7 +78,10 @@ def show_item_options():
     Shows all possible items you can select from!
 
     Returns:
-        Nones
+        None
+
+    Time complexity: O(m) where m is the total number of items
+        Iterates through every item and prints it out
     """
     items = get_items()
     print("Select an item from the following list by enterring the number next to it:")
@@ -77,7 +93,10 @@ def show_unresolved_debts() -> None:
     Shows unresolved debts!
 
     Returns:
-        Nones
+        None
+
+    Time complexity: O(d) where d is the number of unresolved debts.
+        Iterates through all unresolved debts and prints it out
     """
     unresolved_debts = get_unresolved_debts_with_details()
     
@@ -95,6 +114,8 @@ def show_needs_to_be_purchased() -> None:
 
     Returns:
         None
+
+    Time complexity: O(h) where h is the number of household needs
     """
     needs = get_needs_to_be_purchased()
 
@@ -107,7 +128,11 @@ def show_needs_to_be_purchased() -> None:
 ############################ ADDING OR REMOVING FROM DATABASE #######################################
 
 def add_person(first_name: str, last_name: str, allergies: Optional[str] = None, misc_info: Optional[str] = None) -> None:
-    """Adds a new person to the database"""
+    """
+    Adds a new person to the database
+    
+    Time complexity: O(1)
+    """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -118,7 +143,11 @@ def add_person(first_name: str, last_name: str, allergies: Optional[str] = None,
     conn.close()
 
 def delete_person(person_id: int) -> None:
-    """Deletes a person from the database by person_id."""
+    """
+    Deletes a person from the database by person_id.
+    
+    Time complexity: O(1)
+    """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -127,7 +156,11 @@ def delete_person(person_id: int) -> None:
     conn.close()
 
 def add_item(item_name: str, default_cost: float) -> None:
-    """Adds a new item to the Items table."""
+    """
+    Adds a new item to the Items table.
+    
+    Time complexity: O(1)
+    """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -140,7 +173,11 @@ def add_item(item_name: str, default_cost: float) -> None:
     conn.close()
 
 def delete_item(item_id: int) -> None:
-    """Deletes an item from the Items table by item_id."""
+    """
+    Deletes an item from the Items table by item_id.
+    
+    Time complexity: O(1)
+    """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -149,7 +186,11 @@ def delete_item(item_id: int) -> None:
     conn.close()
 
 def add_debt(person_id: int, item_id: int, owed_by: int, owed_to: int, amount: float, purchase_date: str) -> None:
-    """Adds a new debt to the DebtMapping table."""
+    """
+    Adds a new debt to the DebtMapping table.
+    
+    Time complexity: O(1)
+    """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -169,7 +210,11 @@ def add_debt(person_id: int, item_id: int, owed_by: int, owed_to: int, amount: f
     conn.close()
 
 def delete_debt(debt_id: int) -> None:
-    """Deletes a debt from the DebtMapping table by debt_id."""
+    """
+    Deletes a debt from the DebtMapping table by debt_id.
+    
+    Time complexity: O(1)
+    """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
@@ -190,6 +235,8 @@ def add_household_need(item_id: int, budget: float, purchased_by: Optional[int] 
 
     Returns:
         None
+
+    Time complexity: O(1)
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -209,6 +256,8 @@ def add_household_need(item_id: int, budget: float, purchased_by: Optional[int] 
 def get_people() -> List[Dict[str, Union[int, str]]]:
     """
     Gets all people from the database and returns a list of dictionaries with their IDs and full names
+    
+    Time complexity: O(n) where n is the total number of people in the sharehouse
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -225,7 +274,9 @@ def get_people() -> List[Dict[str, Union[int, str]]]:
 def get_owed_amounts() -> List[Dict[str, Union[int, str, float]]]:
     """
     Gets the total owed amount for each person from the database
-    Returns a list of dictionaries with person ID, name, and amount owed
+    Returns: list of dictionaries with person ID, name, and amount owed
+    
+    Time complexity: O(d) where d is the number of unresolved debts.
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -249,6 +300,8 @@ def get_debt_details() -> List[Dict[str, Union[int, str, float]]]:
     """
     Gets detailed debt records, including what was owed, who owes it, and to whom
     Returns a list of dictionaries with debt details
+    
+    Time complexity: O(d) where d is the number of debts that exist
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -278,6 +331,9 @@ def get_debt_details() -> List[Dict[str, Union[int, str, float]]]:
 def get_items() -> List[Dict[str, Union[int, str, float]]]:
     """
     Gets all items from the database and returns a list of dictionaries with their details
+    Returns: list of dictionaries which include the item_id (int), the name of the item (str), and the default cost (float).
+    
+    Time complexity: O(m) where m is the total number of items
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -300,6 +356,8 @@ def get_item_cost(item_id: int) -> Optional[float]:
 
     Returns:
         float: The cost of the item if it exists, or None
+    
+    Time complexity: O(1)
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -359,6 +417,8 @@ def get_needs_to_be_purchased() -> list[tuple[int, str, float]]:
             - need_id (int): id associated with the household needed item
             - item_name (str): the item needed
             - budget (float): the approximate budget of the item
+    
+    Time complexity: O(h) where h is the number of needs in the database
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -385,6 +445,8 @@ def get_total_owed_per_person() -> list[tuple[str, float]]:
         list[tuple[str, float]]: A list of tuples containing:
             - Person's full name.
             - Total amount owed.
+    
+    Time complexity: O(p) where p is the number of debts a singular person the user has selected owes
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -413,6 +475,8 @@ def get_household_needs(is_purchased: int) -> list[tuple[str, float]]:
         list[tuple[str, float]]: A list of tuples containing:
             - Item name.
             - Budget for the item.
+    
+    Time complexity: O(h) where h is the total number of needs in the house
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
@@ -442,6 +506,8 @@ def set_need_as_purchased(need_id: int) -> None:
 
     Returns:
         None
+    
+    Time complexity: O(1)
     """
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()

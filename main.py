@@ -1,6 +1,5 @@
 # --- EXPORTS ---
 from actions import initialise_database, input_debt, input_sharehouse_needs, confirm_debt_payment, confirm_houseneed_payment, visualise_household_data
-import util
 
 # the big boss function
 if __name__ == "__main__":

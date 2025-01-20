@@ -103,7 +103,13 @@ def initialise_database() -> None:
 ######################### FUNCTIONS THE USER CALLS UPON ##############################
 
 def input_debt() -> None:
-    """Prompts user to input debt details. Adds new item to the items database if the debt is over an item not been entered before."""
+    """
+    Prompts user to input debt details. Adds new item to the items database if the debt is over an item not been entered before.
+    
+    Time complexity: O(n+m) where n is the number of people and m is the number of items
+        This is because show_person_options iterates through the number of people (n) to show
+        and show_item_options iterates through the number of items (m) to show the user.
+    """
 
     show_person_options()
     person_id = int(input("Enter the person ID who owes money: "))
@@ -119,7 +125,12 @@ def input_debt() -> None:
     print("Debt has been successfully logged.")
 
 def input_sharehouse_needs() -> None:
-    """Prompts user to input what the sharehouse requires with the item and the cost, and stores that into the database for later referral."""
+    """
+    Prompts user to input what the sharehouse requires with the item and the cost, and stores that into the database for later referral.
+    
+    Time complexity: O(m) where m is the number of items
+        This is due to show_item_options being called.
+    """
     
     print("\nInput Sharehouse Needs")
     show_item_options()
@@ -136,7 +147,12 @@ def input_sharehouse_needs() -> None:
     print("Sharehouse need has been successfully added.")
 
 def confirm_debt_payment() -> None:
-    """Handles debt payment confirmation."""
+    """
+    Handles debt payment confirmation.
+    
+    Time complexity: O(d) where d is the number of unresolved debts
+        This is due to show_unresolved_debts being called
+    """
     print("\nConfirm Debt Payment")
     show_unresolved_debts()
     debt_id = input("Input the associated number to the debt. ")
@@ -146,7 +162,12 @@ def confirm_debt_payment() -> None:
     print("Debt payment confirmed.")
 
 def confirm_houseneed_payment() -> None:
-    """Handles confirmation of sharehouse needs payment."""
+    """
+    Handles confirmation of sharehouse needs payment.
+    
+    Time complexity: O(h) where h is the number of unpurchased household needs.
+        This is due to show_needs_to_be_purchased being called.
+    """
     print("\nConfirm Sharehouse Needs Payment")
     show_needs_to_be_purchased()
     needs_id = input("What is the number of the associated need that has been purchased? ")
@@ -161,6 +182,9 @@ def visualise_household_data() -> None:
         - A bar chart for the total amount owed by each person.
         - A table for unpurchased household needs.
         - A table for purchased household needs.
+
+    Time complexity: O(n+h) where n is the total number of people and h is the total number of household needs items
+
     """
     # total owed per person graph (bar graph)
     total_owed = get_total_owed_per_person()
@@ -183,6 +207,8 @@ def add_new_item(item_try: int) -> int:
 
     Args: 
         item_try (int): the initial input of the item id that the user submitted
+
+    Time complexity: O(m) where m is the number of items in the database.
     """
     items = get_items()
     item = item_try
@@ -200,6 +226,8 @@ def plot_total_owed(total_owed: list[tuple[str, float]]) -> None:
 
     Args:
         total_owed (list[tuple[str, float]]): A list of tuples containing person's full name and amount owed.
+    
+    Time complexity: O(n) where n is the number of total people in the sharehouse
     """
     names = [entry[0] for entry in total_owed]
     amounts = [entry[1] for entry in total_owed]
@@ -220,6 +248,8 @@ def display_needs_table(needs: list[tuple[str, float]], title: str) -> None:
     Args:
         needs (list[tuple[str, float]]): A list of tuples containing item names and their budgets.
         title (str): Title for the table.
+    
+    Time complexity: O(h) where h is the total number of household needs
     """
     # collecting data
     headers = ["Item Name", "Budget ($)"]
