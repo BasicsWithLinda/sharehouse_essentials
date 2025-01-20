@@ -193,7 +193,7 @@ def add_household_need(item_id: int, budget: float, purchased_by: Optional[int] 
     conn = sqlite3.connect("sharehouse.db")
     cursor = conn.cursor()
 
-    # Insert the new household need
+    # insert the new household need
     cursor.execute("""
         INSERT INTO HouseholdNeeds (item_id, budget, purchased_by, purchase_date, is_purchased)
         VALUES (?, ?, ?, ?, ?);
@@ -377,9 +377,63 @@ def get_needs_to_be_purchased() -> list[tuple[int, str, float]]:
     conn.close()
     return needs
 
+def get_total_owed_per_person() -> list[tuple[str, float]]:
+    """
+    Retrieves the total amount owed by each person.
+
+    Returns:
+        list[tuple[str, float]]: A list of tuples containing:
+            - Person's full name.
+            - Total amount owed.
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            p.first_name || ' ' || p.last_name AS full_name,
+            SUM(dm.amount) AS total_owed
+        FROM DebtMapping dm
+        JOIN People p ON dm.owed_by = p.person_id
+        GROUP BY dm.owed_by;
+    """)
+
+    total_owed = cursor.fetchall()
+    conn.close()
+    return total_owed
+
+def get_household_needs(is_purchased: int) -> list[tuple[str, float]]:
+    """
+    Retrieves household needs based on purchase status.
+
+    Args:
+        is_purchased (int): The purchase status (0 for not purchased, 1 for purchased).
+
+    Returns:
+        list[tuple[str, float]]: A list of tuples containing:
+            - Item name.
+            - Budget for the item.
+    """
+    conn = sqlite3.connect("sharehouse.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            i.item_name,
+            hn.budget
+        FROM HouseholdNeeds hn
+        JOIN Items i ON hn.item_id = i.item_id
+        WHERE hn.is_purchased = ?;
+    """, (is_purchased,))
+
+    needs = cursor.fetchall()
+    conn.close()
+    return needs
+
+
 ############################### SETTERS FOR DATABASE ##########################
 
-def set_need_as_purchased(need_id: int):
+def set_need_as_purchased(need_id: int) -> None:
     """
     Sets a household need as purchased by updating its is_purchased state to 1.
 
