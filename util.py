@@ -1,5 +1,5 @@
 import sqlite3
-from typing import List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 from constants import table_names
 
 ############################ VIEWING/RESETTING DATABASE #######################################
@@ -245,7 +245,7 @@ def get_owed_amounts():
     conn.close()
     return owed_amounts
 
-def get_debt_details():
+def get_debt_details() -> List[Dict[str, Union[int, str, float]]]:
     """
     Gets detailed debt records, including what was owed, who owes it, and to whom
     Returns a list of dictionaries with debt details
@@ -275,7 +275,7 @@ def get_debt_details():
     conn.close()
     return debt_details
 
-def get_items():
+def get_items() -> List[Dict[str, Union[int, str, float]]]:
     """
     Gets all items from the database and returns a list of dictionaries with their details
     """
@@ -291,7 +291,7 @@ def get_items():
     conn.close()
     return items
 
-def get_item_cost(item_id):
+def get_item_cost(item_id: int) -> Optional[float]:
     """
     Gets the cost of an item from the database based on its item_id
     

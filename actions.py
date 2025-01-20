@@ -102,7 +102,7 @@ def initialise_database():
 
 ######################### FUNCTIONS THE USER CALLS UPON ##############################
 
-def input_debt():
+def input_debt() -> None:
     """Prompts user to input debt details. Adds new item to the items database if the debt is over an item not been entered before."""
 
     show_person_options()
@@ -118,7 +118,7 @@ def input_debt():
     add_debt(item_id, person_id, owed_to_id, amount, date)
     print("Debt has been successfully logged.")
 
-def input_sharehouse_needs():
+def input_sharehouse_needs() -> None:
     """Prompts user to input what the sharehouse requires with the item and the cost, and stores that into the database for later referral."""
     
     print("\nInput Sharehouse Needs")
@@ -135,7 +135,7 @@ def input_sharehouse_needs():
 
     print("Sharehouse need has been successfully added.")
 
-def confirm_debt_payment():
+def confirm_debt_payment() -> None:
     """Handles debt payment confirmation."""
     print("\nConfirm Debt Payment")
     show_unresolved_debts()
@@ -145,7 +145,7 @@ def confirm_debt_payment():
 
     print("Debt payment confirmed.")
 
-def confirm_houseneed_payment():
+def confirm_houseneed_payment() -> None:
     """Handles confirmation of sharehouse needs payment."""
     print("\nConfirm Sharehouse Needs Payment")
     show_needs_to_be_purchased()
